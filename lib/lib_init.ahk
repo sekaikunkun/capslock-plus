@@ -1,4 +1,4 @@
-﻿;~ 初始化段，也就是自动运行段，所有需要自动运行的代码放这里，然后放到程序最开头
+;~ 初始化段，也就是自动运行段，所有需要自动运行的代码放这里，然后放到程序最开头
 SetTimer, initAll, -400 ;等个100毫秒，等待其他文件的include都完成
 
 return
@@ -59,8 +59,20 @@ global defaultBrowser
 ;获取默认浏览器图标，QWeb的listview用
 RegRead, defaultBrowser, HKCU, SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice, ProgId
 RegRead, defaultBrowser, HKLM, SOFTWARE\Classes\%defaultBrowser%\shell\open\command
-RegExMatch(defaultBrowser, "[a-zA-Z]:\\[\s\S]*\.exe", defaultBrowser)
+
+; 尝试提取路径，处理引号
+if (RegExMatch(defaultBrowser, "^""([^""]+)""", match))
+    defaultBrowser := match1
+else if (RegExMatch(defaultBrowser, "([a-zA-Z]:\\[^ ]+\.exe)", match))
+    defaultBrowser := match1
+else
+    RegExMatch(defaultBrowser, "[a-zA-Z]:\\[\s\S]*\.exe", defaultBrowser)
+
 ;~ MsgBox, % defaultBrowser
-if(defaultBrowser="")
-	defaultBrowser:="C:\Program Files (x86)\Internet Explorer\IExplore.exe"
+if(defaultBrowser="" || !FileExist(defaultBrowser)) {
+    if(FileExist("C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"))
+        defaultBrowser:="C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    else
+        defaultBrowser:="C:\Program Files (x86)\Internet Explorer\IExplore.exe"
+}
 return

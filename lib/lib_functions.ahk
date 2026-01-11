@@ -364,3 +364,18 @@ SystemCursor(OnOff:=1)   ; 初始化 = "I","Init"; 隐藏 = 0,"Off"; 切换 = -1
         DllCall( "SetSystemCursor", "Ptr",h_cursor, "UInt",c%A_Index% )
     }
 }
+
+; Get window real bounding rectangle (compatible with Win10/11 DWM shadows)
+GetWindowRect(hwnd, ByRef x, ByRef y, ByRef w, ByRef h) {
+    VarSetCapacity(rect, 16, 0)
+    ; DWMWA_EXTENDED_FRAME_BOUNDS = 9
+    hr := DllCall("dwmapi\DwmGetWindowAttribute", "Ptr", hwnd, "UInt", 9, "Ptr", &rect, "UInt", 16)
+    if (hr = 0) {
+        x := NumGet(rect, 0, "Int")
+        y := NumGet(rect, 4, "Int")
+        w := NumGet(rect, 8, "Int") - x
+        h := NumGet(rect, 12, "Int") - y
+    } else {
+        WinGetPos, x, y, w, h, ahk_id %hwnd%
+    }
+}

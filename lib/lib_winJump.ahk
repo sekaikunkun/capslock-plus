@@ -127,7 +127,7 @@ activateSideWin(UDLR){
             continue
         }
 
-        WinGetPos, winNowX, winNowY, winNowW, winNowH, ahk_id %winNowId%
+        GetWindowRect(winNowId, winNowX, winNowY, winNowW, winNowH)
         
         ; 不是启动栏的话 
         if(controlClass!="MSTaskListWClass1"){
