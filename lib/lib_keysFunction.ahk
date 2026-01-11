@@ -877,7 +877,9 @@ dynamic_speed(init:=10, a:=0.2, max:=80)
         N += a
     else
         N = 0
-    return Min(Floor(init+Exp(N)), max)
+    
+    speed := Floor(init + (2.718281828 ** N))
+    return (speed < max ? speed : max)
 }
 
 
